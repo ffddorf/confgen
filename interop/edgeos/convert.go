@@ -34,17 +34,11 @@ func ConfigFromMap(out StringBuilder, in map[string]interface{}, depth int) erro
 	for _, k := range keys {
 		v := in[k]
 		switch t := v.(type) {
-		case string:
-			if err := writeKV(out, k, t, indentString); err != nil {
-				return err
-			}
 		case []interface{}:
 			for _, item := range t {
-				s, ok := item.(string)
-				if !ok {
-					return &InvalidMapValueTypeError{
-						valueType: fmt.Sprintf("%T", item),
-					}
+				s, err := primitiveToString(item)
+				if err != nil {
+					return err
 				}
 				if err := writeKV(out, k, s, indentString); err != nil {
 					return err
@@ -78,8 +72,12 @@ func ConfigFromMap(out StringBuilder, in map[string]interface{}, depth int) erro
 				return err
 			}
 		default:
-			return InvalidMapValueTypeError{
-				valueType: fmt.Sprintf("%T", v),
+			s, err := primitiveToString(t)
+			if err != nil {
+				return err
+			}
+			if err := writeKV(out, k, s, indentString); err != nil {
+				return err
 			}
 		}
 	}
@@ -111,6 +109,18 @@ func writeKV(out StringBuilder, k, v string, indent string) error {
 		}
 	}
 	return out.WriteByte('\n')
+}
+
+func primitiveToString(in interface{}) (string, error) {
+	switch t := in.(type) {
+	case string:
+		return t, nil
+	case uint, int, uint32, int32, uint64, int64, float32, float64:
+		return fmt.Sprintf("%d", t), nil
+	}
+	return "", &InvalidMapValueTypeError{
+		valueType: fmt.Sprintf("%T", in),
+	}
 }
 
 func mapKeys[T any](in map[string]T) []string {

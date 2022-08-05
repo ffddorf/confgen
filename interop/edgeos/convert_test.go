@@ -64,6 +64,49 @@ func TestMapConversion(t *testing.T) {
 }
 `,
 		},
+		"numbers": {
+			in: SM{
+				"protocols": SM{
+					"bgp 207871": SM{
+						"maximum-paths": SM{
+							"ibgp": 2,
+						},
+					},
+				},
+			},
+			out: `protocols {
+  bgp 207871 {
+    maximum-paths {
+      ibgp 2
+    }
+  }
+}
+`,
+		},
+		"multivalue numbers": {
+			in: SM{
+				"snmp": SM{
+					"community public": SM{
+						"authorization": "ro",
+					},
+					"contact": "support@freifunk-duesseldorf.de",
+					"listen-address 2001:678:b7c::3": SM{
+						"port": []interface{}{161, "345"},
+					},
+				},
+			},
+			out: `snmp {
+  community public {
+    authorization ro
+  }
+  contact support@freifunk-duesseldorf.de
+  listen-address 2001:678:b7c::3 {
+    port 161
+    port 345
+  }
+}
+`,
+		},
 	}
 
 	for name, tc := range testCases {
