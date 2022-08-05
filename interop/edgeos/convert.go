@@ -2,7 +2,6 @@ package edgeos
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 )
 
@@ -70,7 +69,7 @@ func ConfigFromMap(out StringBuilder, in map[string]interface{}, depth int) erro
 			}
 		default:
 			return InvalidMapValueTypeError{
-				valueType: reflect.TypeOf(v).Name(),
+				valueType: fmt.Sprintf("%T", v),
 			}
 		}
 	}
