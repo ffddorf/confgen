@@ -30,40 +30,22 @@ func ConfigFromMap(out StringBuilder, in map[string]interface{}, depth int) erro
 		sort.Strings(keys)
 	}
 
-	indentDepth := strings.Repeat(indent, depth)
+	indentString := strings.Repeat(indent, depth)
 	for _, k := range keys {
 		v := in[k]
-		if _, err := out.WriteString(indentDepth); err != nil {
-			return err
-		}
-		if _, err := out.WriteString(k); err != nil {
-			return err
-		}
-		if err := out.WriteByte(' '); err != nil {
-			return err
-		}
 		switch t := v.(type) {
 		case string:
-			if strings.Contains(t, " ") {
-				if err := out.WriteByte('"'); err != nil {
-					return err
-				}
-				if _, err := out.WriteString(t); err != nil {
-					return err
-				}
-				if err := out.WriteByte('"'); err != nil {
-					return err
-				}
-			} else {
-				if _, err := out.WriteString(t); err != nil {
-					return err
-				}
-			}
-			if err := out.WriteByte('\n'); err != nil {
+			if err := writeKV(out, k, t, indentString); err != nil {
 				return err
 			}
 		case map[string]interface{}:
-			if _, err := out.WriteString("{\n"); err != nil {
+			if _, err := out.WriteString(indentString); err != nil {
+				return err
+			}
+			if _, err := out.WriteString(k); err != nil {
+				return err
+			}
+			if _, err := out.WriteString(" {\n"); err != nil {
 				return err
 			}
 
@@ -71,7 +53,7 @@ func ConfigFromMap(out StringBuilder, in map[string]interface{}, depth int) erro
 				return err
 			}
 
-			if _, err := out.WriteString(indentDepth); err != nil {
+			if _, err := out.WriteString(indentString); err != nil {
 				return err
 			}
 			if _, err := out.WriteString("}\n"); err != nil {
@@ -84,6 +66,33 @@ func ConfigFromMap(out StringBuilder, in map[string]interface{}, depth int) erro
 		}
 	}
 	return nil
+}
+
+func writeKV(out StringBuilder, k, v string, indent string) error {
+	quoted := strings.Contains(v, " ")
+	if _, err := out.WriteString(indent); err != nil {
+		return err
+	}
+	if _, err := out.WriteString(k); err != nil {
+		return err
+	}
+	if err := out.WriteByte(' '); err != nil {
+		return err
+	}
+	if quoted {
+		if err := out.WriteByte('"'); err != nil {
+			return err
+		}
+	}
+	if _, err := out.WriteString(v); err != nil {
+		return err
+	}
+	if quoted {
+		if err := out.WriteByte('"'); err != nil {
+			return err
+		}
+	}
+	return out.WriteByte('\n')
 }
 
 func mapKeys[T any](in map[string]T) []string {
