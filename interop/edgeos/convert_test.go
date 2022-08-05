@@ -48,6 +48,22 @@ func TestMapConversion(t *testing.T) {
 }
 `,
 		},
+		"multivalue": {
+			in: SM{
+				"interfaces": SM{
+					"ethernet eth1": SM{
+						"address": []interface{}{"10.1.0.1/16", "fde4:4d90:9ebf::1/64"},
+					},
+				},
+			},
+			out: `interfaces {
+  ethernet eth1 {
+    address 10.1.0.1/16
+    address fde4:4d90:9ebf::1/64
+  }
+}
+`,
+		},
 	}
 
 	for name, tc := range testCases {

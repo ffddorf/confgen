@@ -38,6 +38,24 @@ func ConfigFromMap(out StringBuilder, in map[string]interface{}, depth int) erro
 			if err := writeKV(out, k, t, indentString); err != nil {
 				return err
 			}
+		case []interface{}:
+			for _, item := range t {
+				s, ok := item.(string)
+				if !ok {
+					return &InvalidMapValueTypeError{
+						valueType: fmt.Sprintf("%T", item),
+					}
+				}
+				if err := writeKV(out, k, s, indentString); err != nil {
+					return err
+				}
+			}
+		case []string:
+			for _, item := range t {
+				if err := writeKV(out, k, item, indentString); err != nil {
+					return err
+				}
+			}
 		case map[string]interface{}:
 			if _, err := out.WriteString(indentString); err != nil {
 				return err
