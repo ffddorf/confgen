@@ -71,6 +71,19 @@ func ConfigFromMap(out StringBuilder, in map[string]interface{}, depth int) erro
 			if _, err := out.WriteString("}\n"); err != nil {
 				return err
 			}
+		case bool:
+			if !t {
+				continue
+			}
+			if _, err := out.WriteString(indent); err != nil {
+				return err
+			}
+			if _, err := out.WriteString(k); err != nil {
+				return err
+			}
+			if err := out.WriteByte('\n'); err != nil {
+				return err
+			}
 		default:
 			s, err := primitiveToString(t)
 			if err != nil {

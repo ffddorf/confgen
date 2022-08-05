@@ -107,6 +107,35 @@ func TestMapConversion(t *testing.T) {
 }
 `,
 		},
+		"booleans": {
+			in: SM{
+				"ethernet eth3": SM{
+					"disable": true,
+					"duplex":  "auto",
+					"speed":   "auto",
+				},
+			},
+			out: `ethernet eth3 {
+  disable
+  duplex auto
+  speed auto
+}
+`,
+		},
+		"boolean off": {
+			in: SM{
+				"ethernet eth3": SM{
+					"disable": false,
+					"duplex":  "auto",
+					"speed":   "auto",
+				},
+			},
+			out: `ethernet eth3 {
+  duplex auto
+  speed auto
+}
+`,
+		},
 	}
 
 	for name, tc := range testCases {
