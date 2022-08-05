@@ -10,6 +10,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func init() {
+	edgeos.ForceConsistentMapOrdering = true
+}
+
 type SM = map[string]interface{}
 
 func TestMapConversion(t *testing.T) {

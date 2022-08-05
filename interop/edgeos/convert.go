@@ -2,8 +2,12 @@ package edgeos
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
+
+// ForceConsistentMapOrdering is used in tests to ensure consistent output
+var ForceConsistentMapOrdering = false
 
 type InvalidMapValueTypeError struct {
 	valueType string
@@ -21,8 +25,14 @@ type StringBuilder interface {
 const indent = "  "
 
 func ConfigFromMap(out StringBuilder, in map[string]interface{}, depth int) error {
+	keys := mapKeys(in)
+	if ForceConsistentMapOrdering {
+		sort.Strings(keys)
+	}
+
 	indentDepth := strings.Repeat(indent, depth)
-	for k, v := range in {
+	for _, k := range keys {
+		v := in[k]
 		if _, err := out.WriteString(indentDepth); err != nil {
 			return err
 		}
@@ -74,4 +84,12 @@ func ConfigFromMap(out StringBuilder, in map[string]interface{}, depth int) erro
 		}
 	}
 	return nil
+}
+
+func mapKeys[T any](in map[string]T) []string {
+	out := make([]string, 0, len(in))
+	for key := range in {
+		out = append(out, key)
+	}
+	return out
 }
