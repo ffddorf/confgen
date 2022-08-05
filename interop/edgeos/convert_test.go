@@ -1,7 +1,6 @@
 package edgeos_test
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -17,25 +16,46 @@ func init() {
 type SM = map[string]interface{}
 
 func TestMapConversion(t *testing.T) {
-	in := SM{
-		"smart-queue internal": SM{
-			"download": SM{
-				"rate": "39mbit",
+	testCases := map[string]struct {
+		in  map[string]interface{}
+		out string
+	}{
+		"smart queue": {
+			in: SM{
+				"smart-queue internal": SM{
+					"download": SM{
+						"rate": "39mbit",
+					},
+					"wan-interface": "eth1.2",
+				},
 			},
-			"wan-interface": "eth1.2",
-		},
-	}
-
-	out := &strings.Builder{}
-	err := edgeos.ConfigFromMap(out, in, 0)
-	require.NoError(t, err)
-
-	fmt.Println(out.String())
-	assert.Equal(t, `smart-queue internal {
+			out: `smart-queue internal {
   download {
     rate 39mbit
   }
   wan-interface eth1.2
 }
-`, out.String())
+`,
+		},
+		"quoted values": {
+			in: SM{
+				"ethernet eth0": SM{
+					"description": "Some interface doing something",
+				},
+			},
+			out: `ethernet eth0 {
+  description "Some interface doing something"
+}
+`,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			out := &strings.Builder{}
+			err := edgeos.ConfigFromMap(out, tc.in, 0)
+			require.NoError(t, err)
+			assert.Equal(t, tc.out, out.String())
+		})
+	}
 }
