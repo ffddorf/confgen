@@ -1,0 +1,46 @@
+query Device($id: Int!) {
+  device(id: $id) {
+    name
+    rack {
+      name
+    }
+    location {
+      name
+    }
+    site {
+      name
+    }
+    primary_ip4 {
+      address
+    }
+    primary_ip6 {
+      address
+    }
+    interfaces {
+      name
+      description
+      type
+      enabled
+      speed
+      duplex
+      ip_addresses {
+        address
+      }
+      parent {
+        id
+      }
+      child_interfaces {
+        name
+        description
+        type
+        enabled
+        untagged_vlan {
+          vid
+        }
+        ip_addresses {
+          address
+        }
+      }
+    }
+  }
+}
