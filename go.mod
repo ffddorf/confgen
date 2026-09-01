@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/Khan/genqlient v0.5.0
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.12.1
 )
 
 require (
@@ -14,6 +14,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/vektah/gqlparser/v2 v2.4.5 // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
 	golang.org/x/sys v0.0.0-20220319134239-a9b59b0215f8 // indirect
 	golang.org/x/tools v0.1.10 // indirect
